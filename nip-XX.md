@@ -1,25 +1,36 @@
 NIP-XX
 ======
 
-Zap Tags
+Zap Tags in Notes
 --------
 
 `draft` `optional`
 
-This NIP defines a set of tags to set zap parameters for public/social payments. Users can add optional conditions and instructions for their notes like a minimum and maximum zap amount, a redirect of a zap to an npub or a note, and specific LNURL to handle zaps from a specific note. This will enable nostr enabled lightning wallets and supporting clients to better emulate LNURL behaviour via zaps.
+This NIP defines a set of tags to set zap parameters for note payments. These parameters allow users to add optional payment conditions and instructions for their notes such as a minimum and maximum zap amount, redirecting the zap to a different user, or specific LNURL to receive zaps for that note. This can enable supporting clients to better emulate payment behaviour in notes via zaps.
 
-## Zap as Social Payments
+## Zaps as Public Payments
 
-Extending zaps to interaction outside of NOSTR for users that want easily associate zaps to events outside of NOSTR and wish to have social prove that the payer and payee have settled a transaction.
+This NIP aims to create a standart that extend zaps interaction for users that want to associate predefined payment conditions to notes, such as raising funds or settling bills, while creating a public proof that the payer and payee have agreed on the transaction.
 
-Vendors, creditors, and payees need to verify payments outside of NOSTR, but third party observers can cryptographically prove at least that payer and payee have both agreed that payment is complete by validating zap receipt event.
+These tags will help users to request specific amounts, number of zaps and\or redirect the payment to a different public key or LNURL. 
 
-Although not strictly enforceable, these tags will help users request specific amounts and redirect the payment to a different note and or public key, while also expediting the payment of the zap requests by providing a one-tap solution to an arbitrary zap amount. The functionality could be mapped to specific LNURLs that can generate invoices using the provided parameters.
+By allowing the creator of the note to specify the payment values (instead of the payer), these tag parameters minimise the friction of having to input custom amounts and reduce the risk of input incorrect values. By providing a one-tap solution to zap a specific amount the payment is expedited. 
 
-These parameter aim at minimising the friction of having to input custom amounts and reduces the risk of input incorrect values, while keeping the payment information contained in a kind1.
+While Vendors, creditors, and payees may need to verify payments outside of NOSTR, third party observers can cryptographically observe that payer and payee have both agreed that payment is complete by validating the zap receipt event.
 
+## Client Behaviour
 
-## Tags
+When rendering notes, clients MAY display payment parameters by including CTAs that indicate expected Zap Tags interactions.
+
+When rendering zaps on the notes, clients MAY display exclusively the previous zaps that follow the parameters defined in the associated Zap Tags. Alternatively, previous zaps can be displayed separatedly in Zap Tag compliant and non-compliant categories.
+
+In case the client implemets Zap Tags, users can tap to perform a zap with the specified conditions. Alternatively, as all tags are optional, users can still use a default zapping interface when zapping an event with zap tags. 
+
+Additional zaps are always allowed unless a specific LNURL override prevents it.
+
+Clients MAY provide users with additional fields for creating notes with tags to determine zap behaviour. In such case, clients are responsible for appending the intended tags to the respective note before being signed by the user.
+
+## Zap Tags
 
 The following tags are defined as OPTIONAL.
 
@@ -29,9 +40,17 @@ The following tags are defined as OPTIONAL.
 - `zap-payer`     - Public key hex of expected zapper
 - `zap-target`    - Total amount of sats to be raised
 - `zap-split`     - List of public keys and split weight
-- `zap-note`      - Note id for zap forwarding (what happens if zap-redirect and zap-lnurl are defined? Which has priority)
-- `zap-lnurl`     - Custom LNURL override on a note by note basis (if lnurl not responsive, fallback to kind0 of author?)
+- `zap-lnurl`     - Custom LN Adress or LNURL override (if lnurl not responsive, fallback to kind0 of author?)
 
+--
+TODO: DETAIL AND SPECIFY EACH TAG, DISCUSS PREVIOUS ZAP TAGS
+
+Forward zaps should include the public key of the user that payed the zap and the user that created the forward so both users have social proof.
+
+If user specifies a `zap-payer` along with a `zap-min` when creating a note, interface should display `zap-payer` user profile info along side or incorporated in CTA.
+
+- `zap-note`      - Note id for zap forwarding (what happens if zap-redirect and zap-lnurl are defined? Which has priority)
+--
 
 ## Example events and use cases
 
@@ -149,19 +168,6 @@ A user wishes zaps to go to a LNURL with specific parameters that react and adju
 ```
 
 
-## Client Behaviour
-
-Clients MAY give users additional options when creating notes with fields to determine zap parameters.
-
-Clients MAY display zap parameters when rendering notes by including CTAs that indicate expected zap reactions.
-
-When zapping an event, users can use default zapping interface or tap zap UI parameter with specific conditions if client recognise the parameters.
-
-Forward zaps should include the public key of the user that payed the zap and the user that created the forward so both users have social proof.
-
-If user specifies a `zap-payer` along with a `zap-min` when creating a note, interface should display `zap-payer` user profile info along side or incorporated in CTA.
-
-Additional zaps are always allowed unless an specific LNURL override prevents it.
 
 
 
